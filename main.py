@@ -7,36 +7,8 @@ import time
 import pandas as pd
 
 
-def check_file_type(filepath_to_check):
-    base_file_name = os.path.basename(filepath_to_check)
-    if base_file_name.startswith('SEP'):
-        return 'SEP'
-    elif base_file_name.startswith('EP'):
-        return 'EP'
-    else:
-        return False
-
-
-def treat_sep_files(filepath_sep):
-    df = pd.read_csv(filepath_sep, on_bad_lines='skip')
-    df['Time'] = pd.to_datetime(df['Time'], dayfirst=True)
-    df.set_index('Time', inplace=True)
-    df = df.tz_localize('Europe/Madrid')
-    df.reset_index(inplace=True)
-    df['Time'] = df['Time'].dt.tz_localize(None)
-
-    df.dropna(how='any', inplace=True)
-
-    path = os.path.join(PATH_OUTPUT_FILES, os.path.basename(filepath_sep))
-    df.to_csv(path, index=False)
-    push_into_repo(path)
-    return path
-
-
-def treat_ep_files(filepath_ep):
-    filename_original = os.path.basename(filepath_ep)
+def treat_ep_files(filepath_ep, tracker):
     df = pd.read_csv(filepath_ep, on_bad_lines='skip')
-
     df['Time'] = pd.to_datetime(df['Time'], dayfirst=True)
     df.set_index('Time', inplace=True)
     df = df.tz_localize('Europe/Madrid')
@@ -46,14 +18,14 @@ def treat_ep_files(filepath_ep):
     energy_cols = [col for col in df.columns if "(Wh)" in col]
     df.dropna(subset=energy_cols, how='all', inplace=True)
 
-    path = os.path.join(PATH_OUTPUT_FILES, filename_original)
+    path = os.path.join(path_output_files[tracker], os.path.basename(filepath_ep))
     df.to_csv(path, index=False)
     return path
 
 
-def push_into_repo(filepath_to_push):
+def push_into_repo(filepath_to_push, tracker):
     new_data = pd.read_csv(filepath_to_push)
-    database = pd.read_csv(PATH_REPO_INVERTER)
+    database = pd.read_csv(paths_repos[tracker])
 
     overlapping_records = database[database['Time'].isin(new_data['Time'])]
     if overlapping_records.empty:
@@ -67,7 +39,7 @@ def push_into_repo(filepath_to_push):
 
     # Order the database by 'Datetime' in ascending order
     database.sort_values(by='Time', inplace=True)
-    database.to_csv(PATH_REPO_INVERTER, index=False)
+    database.to_csv(paths_repos[tracker], index=False)
 
 
 def cut_and_paste_file(source_path, destination_path):
@@ -102,33 +74,47 @@ def delete_file(file_path):
         print('File '+file_path+' removed correctly!')
 
 
-def main(full_input_path):
-    is_input_ok = check_file_type(full_input_path)
-    if is_input_ok is False:
-        delete_file(full_input_path)
-        return
-    elif is_input_ok == 'SEP':
-        path_out = treat_sep_files(full_input_path)
-        print(full_input_path + ' SEP was parsed')
-    else:
-        path_out = treat_ep_files(full_input_path)
-        print(full_input_path + ' EP was parsed')
+def main(full_input_path, tracker_num):
+
+    path_out = treat_ep_files(full_input_path, tracker_num)
     # To save on raw data parsed the file as it came
-    out_total = os.path.join(PATH_RAW_PARSED, os.path.basename(full_input_path))
+    out_total = os.path.join(paths_raw_parsed[tracker_num], os.path.basename(full_input_path))
+
     cut_and_paste_file(full_input_path, out_total)
     resample_24(path_out)
-    push_into_repo(path_out)
+    push_into_repo(path_out, tracker_num)
 
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
-    PATH_INPUT_FILES = r"C:\Users\pablo\Documents\ProgrammingProjects\PycharmProjects\InputData\Inverter"
-    PATH_RAW_PARSED = r"C:\Users\pablo\Documents\Teleco2018-\5CURSO\TFG\RawDataParsed\INVERTER"
-    PATH_OUTPUT_FILES = r"C:\Users\pablo\Documents\Teleco2018-\5CURSO\TFG\TratarDatos\DatosTratados\DatosInversor_Gijon"
-    PATH_REPO_INVERTER = r"C:\Users\pablo\Documents\Teleco2018-\5CURSO\TFG\TratarDatos\DatosTratados\InverterData.csv"
+    PATH_INPUT_FILES_T1 = r"C:\Users\pablo\Documents\ProgrammingProjects\PycharmProjects\InputData\InverterTracker1"
+    PATH_INPUT_FILES_T2 = r"C:\Users\pablo\Documents\ProgrammingProjects\PycharmProjects\InputData\InverterTracker2"
+
+    PATH_RAW_PARSED_T1 = r"C:\Users\pablo\Documents\Teleco2018-\5CURSO\TFG\RawDataParsed\INVERTER_T1"
+    PATH_RAW_PARSED_T2 = r"C:\Users\pablo\Documents\Teleco2018-\5CURSO\TFG\RawDataParsed\INVERTER_T2"
+    paths_raw_parsed = ["", PATH_RAW_PARSED_T1, PATH_RAW_PARSED_T2]
+
+    PATH_OUTPUT_FILES_T1 = r"C:\Users\pablo\Documents\Teleco2018-\5CURSO\TFG\TratarDatos\DatosTratados" \
+                           r"\DatosInversor_T1_Gijon"
+    PATH_OUTPUT_FILES_T2 = r"C:\Users\pablo\Documents\Teleco2018-\5CURSO\TFG\TratarDatos\DatosTratados" \
+                           r"\DatosInversor_T2_Gijon"
+    path_output_files = ["", PATH_OUTPUT_FILES_T1, PATH_OUTPUT_FILES_T2]
+
+    PATH_REPO_INVERTER_T1 = r"C:\Users\pablo\Documents\Teleco2018-\5CURSO\TFG\TratarDatos\DatosTratados" \
+                            r"\InverterDataT1.csv"
+    PATH_REPO_INVERTER_T2 = r"C:\Users\pablo\Documents\Teleco2018-\5CURSO\TFG\TratarDatos\DatosTratados" \
+                            r"\InverterDataT2.csv"
+    paths_repos = ["", PATH_REPO_INVERTER_T1, PATH_REPO_INVERTER_T2]
     while True:
-        for file in os.listdir(PATH_INPUT_FILES):
+        # Check the first path for CSV files
+        for file in os.listdir(PATH_INPUT_FILES_T1):
             if file.lower().endswith('.csv'):
-                file_inverter = os.path.join(PATH_INPUT_FILES, file)
-                main(file_inverter)
+                file_inverter = os.path.join(PATH_INPUT_FILES_T1, file)
+                main(file_inverter, 1)
+
+        # Check the second path for CSV files
+        for file in os.listdir(PATH_INPUT_FILES_T2):
+            if file.lower().endswith('.csv'):
+                file_inverter = os.path.join(PATH_INPUT_FILES_T2, file)
+                main(file_inverter, 2)
         time.sleep(10)
