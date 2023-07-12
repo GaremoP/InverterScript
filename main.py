@@ -87,23 +87,22 @@ def main(full_input_path, tracker_num):
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
-    PATH_INPUT_FILES_T1 = r"C:\Users\pablo\Documents\ProgrammingProjects\PycharmProjects\InputData\InverterTracker1"
-    PATH_INPUT_FILES_T2 = r"C:\Users\pablo\Documents\ProgrammingProjects\PycharmProjects\InputData\InverterTracker2"
 
-    PATH_RAW_PARSED_T1 = r"C:\Users\pablo\Documents\Teleco2018-\5CURSO\TFG\RawDataParsed\INVERTER_T1"
-    PATH_RAW_PARSED_T2 = r"C:\Users\pablo\Documents\Teleco2018-\5CURSO\TFG\RawDataParsed\INVERTER_T2"
+    PATH_INPUT_FILES_T1 = r"C:\Users\ServidorCEDS\Documents\MonitorizacionPV\InputData\InversorTracker1Gijon"
+    PATH_INPUT_FILES_T2 = r"C:\Users\ServidorCEDS\Documents\MonitorizacionPV\InputData\InversorTracker2Gijon"
+
+    PATH_RAW_PARSED_T1 = r"C:\Users\ServidorCEDS\Documents\MonitorizacionPV\RawDataParsed\Inversor_Tracker1_Gijon"
+    PATH_RAW_PARSED_T2 = r"C:\Users\ServidorCEDS\Documents\MonitorizacionPV\RawDataParsed\Inversor_Tracker2_Gijon"
     paths_raw_parsed = ["", PATH_RAW_PARSED_T1, PATH_RAW_PARSED_T2]
 
-    PATH_OUTPUT_FILES_T1 = r"C:\Users\pablo\Documents\Teleco2018-\5CURSO\TFG\TratarDatos\DatosTratados" \
-                           r"\DatosInversor_T1_Gijon"
-    PATH_OUTPUT_FILES_T2 = r"C:\Users\pablo\Documents\Teleco2018-\5CURSO\TFG\TratarDatos\DatosTratados" \
-                           r"\DatosInversor_T2_Gijon"
+    PATH_OUTPUT_FILES_T1 = r"C:\Users\ServidorCEDS\Documents\MonitorizacionPV\TratarDatos\DatosTratados\DatosInversor_Tracker1_Gijon"
+    PATH_OUTPUT_FILES_T2 = r"C:\Users\ServidorCEDS\Documents\MonitorizacionPV\TratarDatos\DatosTratados\DatosInversor_Tracker2_Gijon"
     path_output_files = ["", PATH_OUTPUT_FILES_T1, PATH_OUTPUT_FILES_T2]
 
-    PATH_REPO_INVERTER_T1 = r"C:\Users\pablo\Documents\Teleco2018-\5CURSO\TFG\TratarDatos\DatosTratados" \
-                            r"\InverterDataT1.csv"
-    PATH_REPO_INVERTER_T2 = r"C:\Users\pablo\Documents\Teleco2018-\5CURSO\TFG\TratarDatos\DatosTratados" \
-                            r"\InverterDataT2.csv"
+    PATH_REPO_INVERTER_T1 = r"C:\Users\ServidorCEDS\Documents\MonitorizacionPV\TratarDatos\DatosTratados\InverterDataT1.csv"
+
+    PATH_REPO_INVERTER_T2 = r"C:\Users\ServidorCEDS\Documents\MonitorizacionPV\TratarDatos\DatosTratados\InverterDataT2.csv"
+
     paths_repos = ["", PATH_REPO_INVERTER_T1, PATH_REPO_INVERTER_T2]
     while True:
         # Check the first path for CSV files
